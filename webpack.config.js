@@ -1,6 +1,6 @@
 const path = require('path')
 module.exports = {
-  entry: path.join(__dirname, 'src', 'index'),
+  entry: ['@babel/polyfill', path.join(__dirname, 'src', 'index')],
   mode: 'development',
   module: {
     rules: [

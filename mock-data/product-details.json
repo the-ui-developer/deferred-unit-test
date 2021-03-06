@@ -1,0 +1,22 @@
+{
+    "4343": {
+        "name": "orange",
+        "type": "fruit",
+        "price": 0.87
+    },
+    "878": {
+        "name": "eggplant",
+        "type": "vegetable",
+        "price": 2.43
+    },
+    "6766": {
+        "name": "banana",
+        "type": "fruit",
+        "price": 0.50
+    },
+    "7667": {
+        "name": "brussels sprouts",
+        "type": "vegetable",
+        "price": 1.10
+    }
+}

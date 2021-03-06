@@ -1,28 +1,76 @@
 import React, { Component } from 'react'
 import Product from './product'
-
+import request from './libs/request'
 export default class App extends Component {
     state = {
       loading: true,
-      productList: [],
+      productGroups: [],
     }
 
-    componentDidMount () {
-
+    async componentDidMount () {
+      try {
+        const products = await request('/api/products/list')
+        Promise.all(
+          products
+            .map(async product => {
+              let data
+              try {
+                data = await request(`/api/product/details/${product.id}`)
+              } catch (e) {}
+              return data
+                ? Object.assign(product, data)
+                : {}
+            })
+        ).catch(e => {
+          return []
+        })
+          .then((products) => {
+            const anyMissing = false
+            const productGroups =
+            Object.values(
+              products
+                .filter(product => product.type && product.name && product.price)
+                .reduce((groups, product) => {
+                  if (!(product.type in groups)) {
+                    groups[product.type] = []
+                  }
+                  groups[product.type].push(product)
+                  return groups
+                }, {})
+            )
+              .filter(group => group.length)
+            this.setState({
+              anyMissing,
+              loading: false,
+              productGroups,
+            })
+          })
+      } catch (e) {
+        console.error(e)
+      }
     }
 
     render () {
-      if (this.state.loading) {
+      const { loading, productGroups } = this.state
+      if (loading) {
         return (<div>Loading, please wait...</div>)
       }
-      if (this.state.productList.length) {
+      if (productGroups.length) {
         return (
-          <div>
+          <section>
             <h1>The product list</h1>
-            { this.state.products.map((product, idx) =>
-              <Product key={ idx } { ...product } />
+            { productGroups.map((products, idx) => (
+              <div key={ idx }>
+                <h2> { products[0].type }</h2>
+                <ul>
+                  { products.map(product =>
+                    <Product key={ product.id } { ...product } />
+                  ) }
+                </ul>
+              </div>
+            )
             ) }
-          </div>
+          </section>
         )
       } else {
         return (<div>Could not load list</div>)
